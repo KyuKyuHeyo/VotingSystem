@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Results – {{ poll.title }}</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    h2 { color: #444; }
+    .result { margin: 10px 0; background: #f5f5f5; padding: 10px; border-radius: 5px; }
+    .percent { font-weight: bold; color: #333; }
+    .names { margin-left: 20px; font-style: italic; color: #555; }
+    .bar-container {
+      background: #ddd;
+      height: 20px;
+      width: 100%;
+      border-radius: 5px;
+      margin-top: 5px;
+      overflow: hidden;
+    }
+    .bar {
+      background: #4CAF50;
+      height: 100%;
+      border-radius: 5px 0 0 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Results: {{ poll.title }}</h2>
+
+  {% for option in options %}
+    <div class="result">
+      {{ option.text }} – {{ option.vote_count }} vote(s)
+      (<span class="percent">{{ option.percentage }}%</span>)
+
+      <div class="bar-container">
+        <div class="bar" style="width: {{ option.percentage }}%;"></div>
+      </div>
+
+      {% if poll.display_names %}
+        <div class="names">
+          Voted by:
+          {% for vote in option.vote_set.all %}
+            {{ vote.name|default:"(anonymous)" }}{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  {% empty %}
+    <p>No votes yet for this poll.</p>
+  {% endfor %}
+
+  <a href="{% url 'poll_list' %}">← Back to Polls</a>
+</body>
+</html>

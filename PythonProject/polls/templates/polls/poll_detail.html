@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ poll.title }}</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; text-align: center; }
+    h2 { color: #444; }
+    form { margin-top: 15px; }
+    label { display: block; margin-bottom: 8px; }
+    input[type="text"], input[type="email"] {
+      padding: 8px; width: 300px; margin-bottom: 12px;
+      border: 1px solid #ccc; border-radius: 4px;
+    }
+    button {
+      padding: 10px 18px; background: #007bff;
+      color: white; border: none; border-radius: 4px;
+    }
+    button:hover { background: #0056b3; }
+    .error { color: red; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>{{ poll.title }}</h2>
+  {% if form.non_field_errors %}
+  <div class="error" style="color: red; margin-bottom: 1em;">
+    {% for error in form.non_field_errors %}
+      <p>{{ error }}</p>
+    {% endfor %}
+  </div>
+{% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+
+    {% if poll.voting_security_email %}
+      <label>Email:</label>
+      <input type="email" name="email" required>
+    {% endif %}
+
+    {% if poll.display_names %}
+      <label>Name (optional):</label>
+      <input type="text" name="name">
+    {% endif %}
+
+    <p><strong>Select an option:</strong></p>
+    {% for option in poll.options.all %}
+      <label>
+        <input type="radio" name="option" value="{{ option.id }}">
+        {{ option.text }}
+      </label>
+    {% endfor %}
+
+    <br><br>
+    <button type="submit">Submit Vote</button>
+  </form>
+
+  {% if error_message %}
+    <div class="error">{{ error_message }}</div>
+  {% endif %}
+
+<a href="{% url 'poll_list' %}">← Back to Polls</a>
+</body>
+</html>
